@@ -19,21 +19,20 @@ import java.util.Set;
 
 /**
  * Class used to parse strings into ParsedFunction objects.
- *
+ * <p>
  * Since only Object types can be passed as arguments then functions with primitive parameter types
- * are not allowed. Return types can however be primitive types. For example double(double f)->(3*f)
- * is NOT valid use the Object type instead double(Double f)->(3*f)
- *
- *
- * Given strings have a similar syntax to Java functions: returnType(parameterType param1,param2)->
- * EXPRESSION returnType(parameterType param1,param2)-> return EXPRESSION; returnType(parameterType1
- * param1,param2, parameterType2 param3, param 4)-> EXPRESSION returnType(parameterType1 param1,
- * parameterType1 param2, parameterType2 param3, param 4)-> EXPRESSION
- *
+ * are not allowed. Return types can however be primitive types. For example double(double f)-&gt;(3*f)
+ * is NOT valid use the Object type instead double(Double f)-&gt;(3*f)
+ * <p>
+ * Given strings have a similar syntax to Java functions: returnType(parameterType param1,param2)-&gt;
+ * EXPRESSION returnType(parameterType param1,param2)-&gt; return EXPRESSION; returnType(parameterType1
+ * param1,param2, parameterType2 param3, param 4)-&gt; EXPRESSION returnType(parameterType1 param1,
+ * parameterType1 param2, parameterType2 param3, param 4)-&gt; EXPRESSION
+ * <p>
  * For example:
- * double(Double x,y,z,f)->(x + y + z + f)
- *
- * double(java.util.List l)->double tot = 1;
+ * double(Double x,y,z,f)-&gt;(x + y + z + f)
+ * <p>
+ * double(java.util.List l)-&gt;double tot = 1;
  * for(java.util.Iterator iterator = ((java.util.List) l).iterator(); iterator.hasNext(); ){ Object
  * o = iterator.next();tot*=((Double)o).doubleValue();} return tot;
  */
