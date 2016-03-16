@@ -22,3 +22,12 @@ ParsedFunction function = FunctionParser.fromString("double(java.util.List l)->d
 Object[] args = new Object[]{Arrays.asList(1.0,2.0,3.0,4.0,5.0)};
 System.out.println(function.evaluateToDouble(args));
 ```
+
+# Maven dependency
+```xml
+<dependency>
+  <groupId>com.github.alfredvc</groupId>
+  <artifactId>FunctionParser</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</dependency>
+```
