@@ -31,3 +31,6 @@ System.out.println(function.evaluateToDouble(args));
   <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
+
+# Beware
+No form of safety checking is done on the input string, so it is up to the user to verify that no dangerous functions are being compiled.
