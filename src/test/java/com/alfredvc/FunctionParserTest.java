@@ -3,16 +3,20 @@ package com.alfredvc;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for FunctionParser.
@@ -79,6 +83,7 @@ public class FunctionParserTest {
      * Simple test to evaluate the performance of generated methods vs compiled methods.
      */
     @Test
+    @Ignore
     public void performanceComparisonWithPrimitives() {
         ParsedFunction constraintFromString = FunctionParser.fromString("double(Double x,y,z,f)->x*y + y + z*z + x*f");
         Object[] args = {Double.valueOf(1.0), Double.valueOf(2.0), Double.valueOf(3.0), Double.valueOf(4.0)};
@@ -146,22 +151,25 @@ public class FunctionParserTest {
 
     @Test
     public void readmeSimpleExample(){
+        boolean expectedResult = false;
         ParsedFunction function = FunctionParser.fromString("boolean(Integer x,y)-> x > y");
-        System.out.println(function.evaluateToBoolean(new Integer[]{2, 3}));
+        assertThat(function.evaluateToBoolean(new Integer[]{2, 3}), is(expectedResult));
     }
 
     @Test
     public void readmeAdvancedExample(){
+        Point expectedResult = new Point(8, 7);
         ParsedFunction<Point> func = FunctionParser.fromString("java.awt.Point(java.awt.Point a,b)->return new java.awt.Point(a.x + b.x,a.y + b.y);");
         Object[] args = {new Point(3, 5), new Point(5, 2)};
         Point result = func.evaluate(args);
-        System.out.println(result);
+        assertThat(result, is(expectedResult));
     }
 
     @Test
     public void readmeComplexFunctionExample() {
+        double expectedResult = 15;
         ParsedFunction function = FunctionParser.fromString("double(java.util.List l)->double tot = 0; for(java.util.Iterator iterator = ((java.util.List) l).iterator(); iterator.hasNext(); ){ Object o = iterator.next(); tot+=((Double)o).doubleValue();} return tot;");
         Object[] args = new Object[]{Arrays.asList(1.0,2.0,3.0,4.0,5.0)};
-        System.out.println(function.evaluateToDouble(args));
+        assertThat(function.evaluateToDouble(args), is(expectedResult));
     }
 }

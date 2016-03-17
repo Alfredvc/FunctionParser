@@ -101,7 +101,7 @@ public class FunctionParser {
      * @throws IllegalArgumentException are thrown with nested Javaassist exceptions, most of these
      *                                  exeptions are due to errors in the functionString.
      */
-    public static ParsedFunction fromString(String functionString) {
+    public static <T> ParsedFunction<T> fromString(String functionString) {
         try {
             //TODO: validate functionString.
             String argsName = "o" + System.currentTimeMillis();
@@ -110,7 +110,6 @@ public class FunctionParser {
             String returnType = tempSplit[0].equals("") ? DEFAULT_RETURN_TYPE : tempSplit[0].trim();
             String paramsString = tempSplit[1].split("\\)")[0].trim();
 
-            List<String> types = new ArrayList<>();
             String methodBody = getMethodBody(functionString);
             String[] typesAndVariables = paramsString.split("\\,");
             int varNr = 0;
@@ -121,7 +120,6 @@ public class FunctionParser {
                 String[] typeAndVariableSplit = trimmed.split("\\s+");
                 if (typeAndVariableSplit.length == 2) {
                     currentType = typeAndVariableSplit[0];
-                    types.add(currentType);
                     currentVar = typeAndVariableSplit[1];
                 } else if (typeAndVariableSplit.length == 1) {
                     currentVar = typeAndVariableSplit[0];
@@ -132,7 +130,7 @@ public class FunctionParser {
                     throw new IllegalArgumentException("No argument type found in " + typeAndVariables);
                 }
                 variables.add(currentVar);
-                methodBody = methodBody.replaceAll(BEHIND + currentVar + AHEAD, getReplaceForVariableAndType(currentVar, currentType, varNr, argsName));
+                methodBody = methodBody.replaceAll(BEHIND + currentVar + AHEAD, getReplaceForVariableAndType(currentType, varNr, argsName));
                 varNr++;
             }
 
@@ -156,7 +154,7 @@ public class FunctionParser {
             addHelperMethods(evalClass);
 
             Class clazz = evalClass.toClass();
-            ParsedFunction obj = (ParsedFunction) clazz.newInstance();
+            ParsedFunction<T> obj = (ParsedFunction) clazz.newInstance();
             clazz.getMethod("setVariableSet", java.util.LinkedHashSet.class).invoke(obj, variables);
             clazz.getMethod("setFunctionString", java.lang.String.class).invoke(obj, functionString);
             return obj;
@@ -202,7 +200,7 @@ public class FunctionParser {
         return functionString.split("->", 2)[1];
     }
 
-    private static String getReplaceForVariableAndType(String var, String type, int varNr, String argsName) {
+    private static String getReplaceForVariableAndType(String type, int varNr, String argsName) {
         String toReplace;
         String returnType;
         if (classToPrimitive.containsKey(type)) {
