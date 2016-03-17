@@ -28,7 +28,7 @@ System.out.println(function.evaluateToDouble(args));
 <dependency>
   <groupId>com.github.alfredvc</groupId>
   <artifactId>FunctionParser</artifactId>
-  <version>0.11-SNAPSHOT</version>
+  <version>0.12-SNAPSHOT</version>
 </dependency>
 ```
 
