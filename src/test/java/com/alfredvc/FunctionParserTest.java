@@ -26,7 +26,7 @@ public class FunctionParserTest {
     public void testSimpleMathematicalFunction() throws CannotCompileException, InstantiationException, NotFoundException, IllegalAccessException {
         double expectedResult = 10.0;
         ParsedFunction constraint = FunctionParser.fromString("double (Double x,y,z,f)->(x + y + z + f)");
-        Object[] args = {Double.valueOf(1.0), Double.valueOf(2.0), Double.valueOf(3.0), Double.valueOf(4.0)};
+        Object[] args = {1.0, 2.0, 3.0, 4.0};
         assertThat(constraint.evaluateToDouble(args), is(expectedResult));
     }
 
@@ -50,7 +50,7 @@ public class FunctionParserTest {
         double expectedFirst = 2.0;
         double expectedSecond = 12.0;
         ParsedFunction constraintFromString = FunctionParser.fromString("double (Double x,y,z,f, Boolean a)->a ? x * y : z * f");
-        Object[] args = {Double.valueOf(1.0), Double.valueOf(2.0), Double.valueOf(3.0), Double.valueOf(4.0), Boolean.TRUE};
+        Object[] args = {1.0, 2.0, 3.0, 4.0, true};
         assertThat(constraintFromString.evaluateToDouble(args), is(expectedFirst));
         args[4] = Boolean.FALSE;
         assertThat(constraintFromString.evaluateToDouble(args), is(expectedSecond));
@@ -61,7 +61,7 @@ public class FunctionParserTest {
         double expectedFirst = 2.0;
         double expectedSecond = 12.0;
         ParsedFunction constraintFromString = FunctionParser.fromString("  double (     Double   x,   y ,z  ,f, Boolean    a     )   ->       a ? x * y : z * f");
-        Object[] args = {Double.valueOf(1.0), Double.valueOf(2.0), Double.valueOf(3.0), Double.valueOf(4.0), Boolean.TRUE};
+        Object[] args = {1.0, 2.0, 3.0, 4.0, true};
         assertThat(constraintFromString.evaluateToDouble(args), is(expectedFirst));
         args[4] = Boolean.FALSE;
         assertThat(constraintFromString.evaluateToDouble(args), is(expectedSecond));
@@ -74,7 +74,7 @@ public class FunctionParserTest {
     public void testFunctionParsingWithListInput() {
         double expectedResult = 24.0;
         ParsedFunction constraintFromString = FunctionParser.fromString("double (java.util.List l)->double tot = 1; for(java.util.Iterator iterator = ((java.util.List) l).iterator(); iterator.hasNext(); ){ Object o = iterator.next();tot*=((Double)o).doubleValue();} return tot;");
-        List<Double> list = Arrays.asList(Double.valueOf(1.0), Double.valueOf(2.0), Double.valueOf(3.0), Double.valueOf(4.0));
+        List<Double> list = Arrays.asList(1.0, 2.0, 3.0, 4.0);
         Object[] args = {list};
         assertThat(constraintFromString.evaluateToDouble(args), is(expectedResult));
     }
@@ -86,20 +86,20 @@ public class FunctionParserTest {
     @Ignore
     public void performanceComparisonWithPrimitives() {
         ParsedFunction constraintFromString = FunctionParser.fromString("double(Double x,y,z,f)->x*y + y + z*z + x*f");
-        Object[] args = {Double.valueOf(1.0), Double.valueOf(2.0), Double.valueOf(3.0), Double.valueOf(4.0)};
+        Object[] args = {1.0, 2.0, 3.0, 4.0};
 
         long start1 = System.nanoTime();
-        for (long i = 0; i < 1000000000l; i++) {
+        for (long i = 0; i < 1000000000L; i++) {
             constraintFromString.evaluateToDouble(args);
         }
         long end1 = System.nanoTime();
         long start2 = System.nanoTime();
-        for (long i = 0; i < 1000000000l; i++) {
+        for (long i = 0; i < 1000000000L; i++) {
             func(1.0, 2.0, 3.0, 4.0);
         }
         long end2 = System.nanoTime();
-        long fromStringTime = ((end1 - start1) / 1000000l);
-        long functionTime = ((end2 - start2) / 1000000l);
+        long fromStringTime = ((end1 - start1) / 1000000L);
+        long functionTime = ((end2 - start2) / 1000000L);
         double percentageDifference = 1.0 - ((double) functionTime / (double) fromStringTime);
 
         System.out.printf("Method generated from function was %.3f%% slower than compiled method", percentageDifference);
@@ -128,9 +128,9 @@ public class FunctionParserTest {
     @Test
     public void testBooleanFuction() {
         ParsedFunction booleanParsedFunction = FunctionParser.fromString("boolean (Integer x,y,z)-> x + y < z");
-        Object[] args = {Integer.valueOf(3), Integer.valueOf(2), Integer.valueOf(15)};
+        Object[] args = {3, 2, 15};
         assertThat(booleanParsedFunction.evaluateToBoolean(args), is(true));
-        Object[] args2 = {Integer.valueOf(4), Integer.valueOf(7), Integer.valueOf(10)};
+        Object[] args2 = {4, 7, 10};
         assertThat(booleanParsedFunction.evaluateToBoolean(args2), is(false));
     }
 

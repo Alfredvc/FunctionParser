@@ -97,6 +97,7 @@ public class FunctionParser {
      * functions or an error.
      *
      * @param functionString the string to be parsed
+     * @param <T> the return type of the function. 
      * @return a class implementing the ParsedFunction interface
      * @throws IllegalArgumentException are thrown with nested Javaassist exceptions, most of these
      *                                  exeptions are due to errors in the functionString.
