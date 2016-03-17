@@ -97,12 +97,13 @@ public class FunctionParser {
      * functions or an error.
      *
      * @param functionString the string to be parsed
-     * @param <T> the return type of the function. 
+     * @param <T> the return type of the function.
      * @return a class implementing the ParsedFunction interface
      * @throws IllegalArgumentException are thrown with nested Javaassist exceptions, most of these
      *                                  exeptions are due to errors in the functionString.
      */
     public static <T> ParsedFunction<T> fromString(String functionString) {
+        String methodString="";
         try {
             //TODO: validate functionString.
             String argsName = "o" + System.currentTimeMillis();
@@ -146,21 +147,20 @@ public class FunctionParser {
                     new CtClass[]{pool.makeClass("com.alfredvc.ParsedFunction")});
 
 
-            String methodString = getMethodString(argsName, returnType, methodBody);
+            methodString = getMethodString(argsName, returnType, methodBody);
 
 
-            evalClass.addMethod(
-                    CtNewMethod.make(methodString, evalClass));
+            evalClass.addMethod(CtNewMethod.make(methodString, evalClass));
 
             addHelperMethods(evalClass);
 
-            Class clazz = evalClass.toClass();
-            ParsedFunction<T> obj = (ParsedFunction) clazz.newInstance();
+            Class<ParsedFunction<T>> clazz = evalClass.toClass();
+            ParsedFunction<T> obj = clazz.newInstance();
             clazz.getMethod("setVariableSet", java.util.LinkedHashSet.class).invoke(obj, variables);
             clazz.getMethod("setFunctionString", java.lang.String.class).invoke(obj, functionString);
             return obj;
         } catch (CannotCompileException | InvocationTargetException | NoSuchMethodException | NotFoundException | IllegalAccessException | InstantiationException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException("Error when parsing function: \n" + methodString , e);
         }
     }
 
@@ -186,8 +186,12 @@ public class FunctionParser {
         );
     }
 
-    private static String getMethodString(String argsName, String returnType, String methodBody) {
+    private static String getMethodString(String argsName, String returnType, String inputMethodBody) {
         String methodString;
+        String methodBody = inputMethodBody;
+        if(classToPrimitive.containsKey(returnType)) {
+            methodBody = returnType + ".valueOf(" + methodBody+ ")";
+        }
 
         if (methodBody.split(BEHIND + "return" + AHEAD).length > 1) {
             methodString = "public " + getMethodNameAndReturnType(returnType) + "(Object[] " + argsName + "){" + methodBody + "}";
@@ -198,7 +202,7 @@ public class FunctionParser {
     }
 
     private static String getMethodBody(String functionString) {
-        return functionString.split("->", 2)[1];
+        return functionString.substring(functionString.indexOf("->")+2);
     }
 
     private static String getReplaceForVariableAndType(String type, int varNr, String argsName) {
